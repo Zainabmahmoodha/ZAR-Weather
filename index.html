@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ZAR Weather App</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+    * { box-sizing: border-box; }
+
+    :root {
+      --purple-light: #764ba2;
+      --purple-dark: #a678db;
+      --background-light: rgba(255, 255, 255, 0.15);
+      --background-dark: rgba(30, 30, 30, 0.85);
+      --text-light: #f7f7f7;
+      --text-dark: #eee;
+    }
+body.light-mode {
+background-image: url('images/light-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.3s ease;
+}
+
+body.dark-mode {
+background-image: url('images/dark-bg.jpg');
+  color: #fff;
+}
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(270deg, var(--purple-light), #667eea);
+      background-size: 600% 600%;
+      animation: gradientShift 15s ease infinite;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: var(--text-light);
+      padding: 20px;
+      font-weight: 400;  word-wrap: break-word;
+  overflow-x: hidden;
+position: relative;
+      line-height: 1.7;
+      letter-spacing: 0.03em;
+      transition: background-color 0.4s ease, color 0.4s ease;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 25px;
+      font-weight: 600;
+      font-size: 2.5rem;
+      text-shadow: 1px 1px 3px #000;
+      letter-spacing: 0.05em;
+    }
+
+    .search-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      box-shadow: inset 0 0 5px rgba(255,255,255,0.3);
+      transition: box-shadow 0.3s ease, background-color 0.3s ease;
+      background-color: rgba(255, 255, 255, 0.15);
+      color: inherit;
+      min-width: 0;
+    }
+
+    input[type="text"]::placeholder {
+      color: #ddd;
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      background-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 10px #764ba2;
+      outline: none;
+    }
+
+    input[type="text"]:focus::placeholder {
+      opacity: 0.4;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #764ba2;
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(118, 75, 162, 0.6);
+      transition: box-shadow 0.3s ease, transform 0.2s ease;
+      white-space: nowrap;
+    }
+
+    button:focus {
+      outline: 2px solid var(--purple-light);
+      outline-offset: 2px;
+      transform: scale(1.05);
+    }
+
+    button:hover {
+  box-shadow: 0 6px 20px rgba(118, 75, 162, 0.8);
+  transform: scale(1.05);
+}
+
+
+    /* The main container box: simple square shape */
+    .weather-app {
+  width: 500px;
+  max-width: 100%;
+  min-height: 550px;  /* minimum height */
+  height: auto;       /* auto height to fit content */
+  background: var(--background-light);
+  color: #f7f7f7;
+  margin: 40px auto;
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.1),
+    0 12px 30px rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;  overflow-x: hidden; /* hides anything going beyond */
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px 30px;  /* reduced padding for more compact */
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+
+    .icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+      animation: subtleBounce 3s ease-in-out infinite;
+      transition: opacity 0.4s ease;
+      will-change: transform;  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+
+    }
+
+    .temp {
+      font-size: 3.5rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      transition: opacity 0.4s ease;
+    }
+
+    .desc {
+      font-size: 1.3rem;
+      font-style: italic;
+      color: #e5e5e5;
+      transition: opacity 0.4s ease;
+      margin-bottom: 10px;
+    }
+
+    .weather-detail {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .weather-app:hover {
+      box-shadow: 0 12px 40px rgba(118, 75, 162, 0.7);
+      transform: translateY(-5px);
+      transition: box-shadow 0.4s ease, transform 0.4s ease;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes subtleBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Dark Mode */
+    body.dark-mode {
+      background: #121212;
+      color: var(--text-dark);
+    }
+
+    body.dark-mode .weather-app {
+      background: var(--background-dark);
+      border-color: rgba(80, 80, 80, 0.8);
+      color: #eee;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+    }
+
+    body.dark-mode input[type="text"] {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #eee;
+      box-shadow: inset 0 0 5px rgba(255,255,255,0.1);
+    }
+
+    body.dark-mode input[type="text"]::placeholder {
+      color: #bbb;
+    }
+
+    body.dark-mode input[type="text"]:focus {
+      background-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 10px #a678db;
+    }
+
+    body.dark-mode button {
+      background: #a678db;
+      box-shadow: 0 4px 15px rgba(166, 120, 219, 0.3);
+      color: #222;
+    }
+
+    body.dark-mode button:hover {
+      box-shadow: 0 6px 20px rgba(166, 120, 219, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .mode-toggle {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      border-radius: 15px;
+      background: #764ba2;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(118, 75, 162, 0.6);
+      transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    }
+body.dark-mode #cityName,
+body.dark-mode #localTime {
+  color: #ddd;
+}
+
+    #cityName {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #f0e9ff;
+      text-shadow: 0 0 5px rgba(0,0,0,0.3);
+    }
+
+    .mode-toggle:hover {
+      box-shadow: 0 5px 15px rgba(118, 75, 162, 0.8);
+      background-color: #9160c9;
+    }
+#header {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* space between heading and icon */
+}
+
+#toggleDarkModeBtn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+#toggleDarkModeBtn:hover {
+  background-color: transparent;
+  transform: scale(1.1);
+}
+
+body.dark-mode #toggleDarkModeBtn {
+  background-color: #333;
+  color: #fff;
+}
+
+#forecastContainer {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 10px 0; overflow-x: auto;
+  max-width: 100%;       /* limit width to parent */
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #8a2be2 transparent;
+}
+
+
+#forecastContainer::-webkit-scrollbar {
+  height: 6px;
+}
+
+#forecastContainer::-webkit-scrollbar-thumb {
+  background-color: #8a2be2;
+  border-radius: 3px;
+}
+
+#forecastContainer:hover {
+  scroll-behavior: smooth;
+}
+
+.forecast-card {
+  background: linear-gradient(135deg, #7e57c2, #9575cd); /* purple gradient */
+  color: white;
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-width: 100px;
+  text-align: center;  box-sizing: border-box;
+
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgb(142 94 238 / 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+}
+
+.forecast-card:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgb(142 94 238 / 0.7);
+}
+
+
+#transitionOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  z-index: 9999;
+  transition: opacity 0.6s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  margin: 10px auto;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.show-transition {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Fade and scale in from center */
+.fade-scale-in {
+  animation: fadeScaleIn 0.6s forwards;
+  animation-timing-function: ease-out;
+}
+#localTime {
+  margin-top: 8px;
+  font-size: 1.5rem;
+  color: #ffffff;
+}
+.humidity-rain {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+  max-width: 500px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  gap: 5px;
+  padding-top: 40px;
+}
+
+.humidity-rain > div {
+  background: linear-gradient(135deg, #7e57c2, #9575cd);
+  color: white;
+  border-radius: 12px;
+  width: 75px;  /* reduced width */
+  aspect-ratio: 1 / 1;
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgb(142 94 238 / 0.4);
+  user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 12px;
+  white-space: normal;
+  line-height: 1.2;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.humidity-rain > div:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgb(142 94 238 / 0.7);
+}
+
+#feedback {
+  margin-top: 20px;
+  padding: 10px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 300;
+  border-radius: 12px;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(200, 100, 255, 0.2);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  animation: popIn 0.8s ease;
+}
+
+#feedback:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 25px rgba(200, 100, 255, 0.4);
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+/* Align dark mode toggle to right side */
+.toggle-container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+/* Make sure the checkbox is hidden, only label styled */
+#darkModeToggle {
+  display: none;
+}
+
+/* Style mode-toggle label as button */
+.mode-toggle {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 6px 12px;
+  font-size: 1.2rem;
+  border-radius: 15px;
+  background: #764ba2;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(118, 75, 162, 0.6);
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+}
+
+.mode-toggle:hover {
+  box-shadow: 0 5px 15px rgba(118, 75, 162, 0.8);
+  background-color: #9160c9;
+}
+
+
+/* Temperature container: temp and unit toggle button side by side */
+.temp-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.unit-toggle {
+  font-size: 0.8rem;
+  padding: 2px 8px;
+  border-radius: 8px;
+  border: none;
+  background-color: #764ba2;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 3px 8px rgba(118, 75, 162, 0.7);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.unit-toggle:hover {
+  background-color: #9160c9;
+  box-shadow: 0 5px 12px rgba(118, 75, 162, 0.9);
+}
+
+/* Keyframes for fade & scale in */
+@keyframes fadeScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+    /* Responsive tweaks */
+    @media (max-width: 350px) {
+      h2 {
+        font-size: 2rem;
+      }
+
+       .weather-app {
+    width: 90vw;
+    height: auto; /* make height dynamic on small screens */
+    padding: 10px;
+        font-size: 0.85rem; /* slightly smaller fonts */
+
+  }
+      .search-container {
+        flex-direction: column;
+        gap: 15px;
+        max-width: 100%;
+      }
+
+      input[type="text"], button, .mode-toggle {
+        width: 100%;
+        padding: 12px 15px;
+        font-size: 1.1rem;
+      }
+
+      .icon {
+        font-size: 3.5rem;
+      }
+
+      .temp {
+        font-size: 2.8rem;
+      }
+
+       button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+      .desc {
+        font-size: 1.1rem;
+      }
+    }
+
+    
+  </style>
+</head>
+<body>
+  <div class="weather-app" id="weatherCard">
+   <div id="header">
+  <h1>ZAR WEATHER</h1>
+  <button id="toggleDarkModeBtn" aria-label="Toggle Dark Mode">🌙</button>
+</div>
+
+
+    <div class="search-container">
+      <input type="text" id="cityInput" placeholder="Enter city name" />
+      <button id="searchButton">Search</button>
+    </div>
+
+    <h2 id="cityName"></h2>
+    <div id="weatherIcon" class="icon"></div>
+    <p id="description" class="desc"></p>
+    <p id="temperature" class="temp"></p>      <button id="toggleUnitBtn">👀°F</button>
+
+    <div class="humidity-rain">
+      <div id="humidity"></div>
+      <div id="rainVolume"></div>
+      <div id="windSpeed"></div>
+<div id="pressure"></div>
+<div id="sunrise"></div>
+<div id="sunset"></div>
+    </div>
+
+<div id="feedback"></div>
+<div id="forecastContainer" class="forecast-container"></div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
