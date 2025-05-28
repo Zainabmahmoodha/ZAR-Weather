@@ -146,7 +146,6 @@ position: relative;
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-
     .icon {
       font-size: 5rem;
       margin-bottom: 20px;
@@ -356,6 +355,7 @@ body.dark-mode #toggleDarkModeBtn {
   pointer-events: none;
 }
 
+
 .spinner {
   border: 4px solid rgba(255, 255, 255, 0.2);
   border-top: 4px solid #fff;
@@ -385,39 +385,47 @@ body.dark-mode #toggleDarkModeBtn {
   font-size: 1.5rem;
   color: #ffffff;
 }
-.humidity-rain {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 12px;
-  max-width: 500px;
-  box-sizing: border-box;
-  border-radius: 12px;
-  gap: 5px;
-  padding-top: 40px;
-  overflow-x: auto;       /* Enable horizontal scrolling */
-  white-space: nowrap;    /* Prevent line breaks so content stays in one line */
-  max-width: 100%;        /* Limit the container width */
-  padding-bottom: 10px;    /* Optional: some space for scrollbar */
-scrollbar-color: #8a2be2 transparent;
-scrollbar-width: thin;
-}
-/* Optional: styling the horizontal scrollbar for WebKit browsers */
-.humidity-rain::-webkit-scrollbar {
-  height: 6px;            /* scrollbar height for horizontal */
-}
 
-.humidity-rain::-webkit-scrollbar-track {
-  background: #f0f0f0;
-}
+  .humidity-rain {
+    display: flex;
+    gap: 10px;
+    max-width: 500px;        /* Small width to force overflow */
+    padding: 10px;
+    overflow-x: auto;        /* Enable horizontal scroll */
+    white-space: nowrap;     /* Keep children in one line */
+    border-radius: 12px;
 
-.humidity-rain::-webkit-scrollbar-thumb {
-  background-color: #8a2be2;
-  border-radius: 4px;
-}
-.humidity-rain:hover
-{
-  scroll-behavior: smooth;
-}
+    /* Scrollbar styles for WebKit browsers */
+    scrollbar-width: thin;               /* Firefox */
+    scrollbar-color: #8a2be2 transparent;
+  }
+
+  /* WebKit scrollbar styling */
+  .humidity-rain::-webkit-scrollbar {
+    height: 6px;
+  }
+  .humidity-rain::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+  }
+  .humidity-rain::-webkit-scrollbar-thumb {
+    background-color: #8a2be2;
+    border-radius: 10px;
+  }
+  .humidity-rain:hover::-webkit-scrollbar-thumb {
+    background-color: #6f22c7;
+  }
+
+  /* Items inside container */
+  .humidity-rain > div {
+    min-width: 100px;
+    background-color: #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    user-select: none;
+  }
+
 .humidity-rain > div {
   background: linear-gradient(135deg, #7e57c2, #9575cd);
   color: white;
@@ -472,6 +480,12 @@ scrollbar-width: thin;
   }
 }
 
+#toggleUnitBtn{
+  border-radius: 50px;
+  background-color: transparent;
+  border-color: #8a2be2;
+  border-width: 1px;
+}
 
 /* Align dark mode toggle to right side */
 .toggle-container {
@@ -615,7 +629,7 @@ scrollbar-width: thin;
     <h2 id="cityName"></h2>
     <div id="weatherIcon" class="icon"></div>
     <p id="description" class="desc"></p>
-    <p id="temperature" class="temp"></p>      <button id="toggleUnitBtn">👀°F</button>
+   <div class="temp"> <p id="temperature" class="temp"></p>      <button id="toggleUnitBtn">°F</button></div>
 
     <div class="humidity-rain">
       <div id="humidity"></div>

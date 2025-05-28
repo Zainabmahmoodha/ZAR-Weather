@@ -207,7 +207,7 @@ function toggleUnit() {
   if (!latestWeatherData) return;
 
   isCelsius = !isCelsius;
-  toggleUnitBtn.innerText = isCelsius ? "👀°F" : "👀°C";
+  toggleUnitBtn.innerText = isCelsius ? "°F" : "°C";
   updateWeatherUI(latestWeatherData, false);
 }
 
