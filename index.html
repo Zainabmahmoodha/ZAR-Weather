@@ -394,8 +394,30 @@ body.dark-mode #toggleDarkModeBtn {
   border-radius: 12px;
   gap: 5px;
   padding-top: 40px;
+  overflow-x: auto;       /* Enable horizontal scrolling */
+  white-space: nowrap;    /* Prevent line breaks so content stays in one line */
+  max-width: 100%;        /* Limit the container width */
+  padding-bottom: 10px;    /* Optional: some space for scrollbar */
+scrollbar-color: #8a2be2 transparent;
+scrollbar-width: thin;
+}
+/* Optional: styling the horizontal scrollbar for WebKit browsers */
+.humidity-rain::-webkit-scrollbar {
+  height: 6px;            /* scrollbar height for horizontal */
 }
 
+.humidity-rain::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+.humidity-rain::-webkit-scrollbar-thumb {
+  background-color: #8a2be2;
+  border-radius: 4px;
+}
+.humidity-rain:hover
+{
+  scroll-behavior: smooth;
+}
 .humidity-rain > div {
   background: linear-gradient(135deg, #7e57c2, #9575cd);
   color: white;
@@ -416,7 +438,6 @@ body.dark-mode #toggleDarkModeBtn {
   line-height: 1.2;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
 .humidity-rain > div:hover {
   transform: scale(1.1);
   box-shadow: 0 8px 20px rgb(142 94 238 / 0.7);
@@ -535,14 +556,14 @@ body.dark-mode #toggleDarkModeBtn {
 
     /* Responsive tweaks */
     @media (max-width: 350px) {
-      h2 {
+      h1 {
         font-size: 2rem;
       }
 
        .weather-app {
     width: 90vw;
     height: auto; /* make height dynamic on small screens */
-    padding: 10px;
+    padding: 15px 20px;
         font-size: 0.85rem; /* slightly smaller fonts */
 
   }
@@ -563,7 +584,7 @@ body.dark-mode #toggleDarkModeBtn {
       }
 
       .temp {
-        font-size: 2.8rem;
+        font-size: 2.5rem;
       }
 
        button {
@@ -600,9 +621,9 @@ body.dark-mode #toggleDarkModeBtn {
       <div id="humidity"></div>
       <div id="rainVolume"></div>
       <div id="windSpeed"></div>
-<div id="pressure"></div>
-<div id="sunrise"></div>
-<div id="sunset"></div>
+      <div id="pressure"></div>
+      <div id="sunrise"></div>
+      <div id="sunset"></div>
     </div>
 
 <div id="feedback"></div>
